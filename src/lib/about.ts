@@ -1,5 +1,7 @@
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "./firebase";
+import { doc, getDoc, getFirestore } from "firebase/firestore/lite";
+import { app } from "./firebase";
+
+const db = getFirestore(app);
 
 type AboutDoc = {
     name: string;
