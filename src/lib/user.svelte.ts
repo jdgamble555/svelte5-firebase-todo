@@ -20,14 +20,16 @@ const _useUser = (defaultUser: UserType | null = null) => {
 
     const user = rune(defaultUser);
 
-    const unsubscribe = onIdTokenChanged(auth, (_user: User | null) => {
-        if (!_user) {
-            user.value = null;
-            return;
-        }
-        const { displayName, photoURL, uid, email } = _user;
-        user.value = { displayName, photoURL, uid, email };
-    });
+    const unsubscribe = onIdTokenChanged(
+        auth,
+        (_user: User | null) => {
+            if (!_user) {
+                user.value = null;
+                return;
+            }
+            const { displayName, photoURL, uid, email } = _user;
+            user.value = { displayName, photoURL, uid, email };
+        });
 
     onDestroy(unsubscribe);
 

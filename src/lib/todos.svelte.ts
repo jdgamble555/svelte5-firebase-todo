@@ -17,7 +17,7 @@ import {
 import { auth, db } from "./firebase";
 import { useUser } from "./user.svelte";
 import { FirebaseError } from "firebase/app";
-import { onDestroy } from "svelte";
+import { untrack } from "svelte";
 import { rune } from "./rune.svelte";
 
 export const genText = () => Math.random().toString(36).substring(2, 15);
@@ -54,28 +54,37 @@ export const useTodos = (
 
     const _todos = rune(todos);
 
-    const user = useUser();
+    $effect(() => {
 
-    // filtering todos depend on user
-    if (!user.value) {
-        _todos.value = null;
-        return {
-            value: null
+        const user = useUser();
+
+        // filtering todos depend on user
+        if (!user.value) {
+            untrack(() => {
+                _todos.value = null;
+            });
+            return;
+        }
+
+        const unsubscribe = onSnapshot(
+            query(
+                collection(db, 'todos'),
+                where('uid', '==', user.value.uid),
+                orderBy('created')
+            ).withConverter<Todo>(todoConverter), (q) => {
+                untrack(() => {
+                    _todos.value = q.empty ? [] : q.docs.map(doc => doc.data({
+                        serverTimestamps: 'estimate'
+                    }));
+                });
+            });
+
+        return () => {
+            console.log('unsub test');
+            unsubscribe();
         };
-    }
 
-    const unsubscribe = onSnapshot(
-        query(
-            collection(db, 'todos'),
-            where('uid', '==', user.value.uid),
-            orderBy('created')
-        ).withConverter<Todo>(todoConverter), (q) => {
-            _todos.value = q.empty ? [] : q.docs.map(doc => doc.data({
-                serverTimestamps: 'estimate'
-            }));
-        });
-
-    onDestroy(unsubscribe);
+    });
 
     return _todos;
 };

@@ -1,5 +1,6 @@
 import { getContext, hasContext, setContext } from "svelte";
 import { readable, writable } from "svelte/store";
+import { rune } from "./rune.svelte";
 
 export const useSharedStore = <T, A>(
     name: string,
@@ -22,5 +23,6 @@ export const useWritable = <T>(name: string, value?: T) =>
 export const useReadable = <T>(name: string, value: T) =>
     useSharedStore(name, readable, value);
 
+// shared rune
 export const useRune = <T>(name: string, value: T) =>
-    useSharedStore(name, $state, value);
+    useSharedStore(name, rune, value);
