@@ -8,7 +8,7 @@
 </script>
 
 <section class="flex flex-col gap-3 p-5 items-center">
-	{#if user.value}
+	{#if user.value.data}
 		<Profile />
 		<button
 			class="border bg-blue-600 text-white w-fit p-3 rounded-lg font-semibold"

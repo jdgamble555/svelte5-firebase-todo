@@ -16,19 +16,47 @@ export const loginWithGoogle = async () =>
 export const logout = async () =>
     await signOut(auth);
 
-const _useUser = (defaultUser: UserType | null = null) => {
+const _useUser = () => {
 
-    const user = rune(defaultUser);
+    const user = rune<{
+        loading: boolean,
+        data: UserType | null,
+        error: Error | null
+    }>({
+        loading: true,
+        data: null,
+        error: null
+    });
 
     const unsubscribe = onIdTokenChanged(
         auth,
         (_user: User | null) => {
+
+            // not logged in
             if (!_user) {
-                user.value = null;
+                user.value = {
+                    loading: false,
+                    data: null,
+                    error: null
+                };
                 return;
             }
+
+            // logged in
             const { displayName, photoURL, uid, email } = _user;
-            user.value = { displayName, photoURL, uid, email };
+            user.value = {
+                loading: false,
+                data: { displayName, photoURL, uid, email },
+                error: null
+            };
+        }, (error) => {
+
+            // error
+            user.value = {
+                loading: false,
+                data: null,
+                error
+            };
         });
 
     onDestroy(unsubscribe);

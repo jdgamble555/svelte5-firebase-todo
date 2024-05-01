@@ -14,7 +14,7 @@ declare global {
 		uid: string;
 		text: string;
 		complete: boolean;
-		created: Date;
+		createdAt: Date;
 	};
 	
 	namespace App {

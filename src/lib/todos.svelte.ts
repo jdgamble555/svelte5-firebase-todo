@@ -19,11 +19,15 @@ import { useUser } from "./user.svelte";
 import { FirebaseError } from "firebase/app";
 import { untrack } from "svelte";
 import { rune } from "./rune.svelte";
+import { dev } from "$app/environment";
 
 export const genText = () => Math.random().toString(36).substring(2, 15);
 
 const todoConverter = {
-    toFirestore(value: PartialWithFieldValue<Todo>, options?: SetOptions) {
+    toFirestore(
+        value: PartialWithFieldValue<Todo>,
+        options?: SetOptions
+    ) {
         const isMerge = options && 'merge' in options;
         if (!auth.currentUser) {
             throw 'User not logged in!';
@@ -31,7 +35,7 @@ const todoConverter = {
         return {
             ...value,
             uid: auth.currentUser.uid,
-            [isMerge ? 'updated' : 'created']: serverTimestamp()
+            [isMerge ? 'updatedAt' : 'createdAt']: serverTimestamp()
         };
     },
     fromFirestore(
@@ -39,53 +43,84 @@ const todoConverter = {
         options: SnapshotOptions
     ) {
         const data = snapshot.data(options);
-        const created = data.created as Timestamp;
+        const createdAt = data['createdAt'] as Timestamp;
         return {
             ...data,
             id: snapshot.id,
-            created: created.toDate()
+            createdAt: createdAt.toDate()
         } as Todo;
     }
 };
 
-export const useTodos = (
-    todos: Todo[] | null = null
-) => {
+export const useTodos = () => {
 
-    const _todos = rune(todos);
+    const user = useUser();
+
+    const _todos = rune<{
+        data: Todo[],
+        loading: boolean,
+        error: FirebaseError | null
+    }>({
+        data: [],
+        loading: true,
+        error: null
+    });
 
     $effect(() => {
 
-        const user = useUser();
+        const _user = user.value.data;
 
         // filtering todos depend on user
-        if (!user.value) {
+        if (!_user) {
             untrack(() => {
-                _todos.value = null;
+                _todos.value = {
+                    loading: false,
+                    data: [],
+                    error: null
+                };
             });
             return;
         }
 
-        const unsubscribe = onSnapshot(
+        return onSnapshot(
             query(
                 collection(db, 'todos'),
-                where('uid', '==', user.value.uid),
-                orderBy('created')
+                where('uid', '==', _user.uid),
+                orderBy('createdAt')
             ).withConverter<Todo>(todoConverter), (q) => {
-                untrack(() => {
-                    _todos.value = q.empty ? [] : q.docs.map(doc => doc.data({
-                        serverTimestamps: 'estimate'
-                    }));
-                });
+
+                if (q.empty) {
+                    _todos.value = {
+                        loading: false,
+                        data: [],
+                        error: null
+                    };
+                }
+
+                const data = q.docs.map(doc => doc.data({
+                    serverTimestamps: 'estimate'
+                }));
+
+                if (dev) {
+                    console.log(data);
+                }
+
+                _todos.value = {
+                    loading: false,
+                    data,
+                    error: null
+                };
+
+            }, (error) => {
+
+                // Handle error
+                _todos.value = {
+                    loading: false,
+                    data: [],
+                    error
+                };
             });
-
-        return () => {
-            console.log('unsub test');
-            unsubscribe();
-        };
-
     });
-
     return _todos;
 };
 
