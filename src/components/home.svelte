@@ -12,8 +12,10 @@
 		<Profile />
 		<button
 			class="border bg-blue-600 text-white w-fit p-3 rounded-lg font-semibold"
-			on:click={logout}>Logout</button
+			on:click={logout}
 		>
+			Logout
+		</button>
 		<hr />
 		<Todos />
 	{:else}
