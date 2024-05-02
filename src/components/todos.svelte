@@ -16,6 +16,10 @@
 			<TodoItem {todo} />
 		{/each}
 	</div>
+{:else if todos.value.loading}
+	<p>Loading...</p>
+{:else if todos.value.error}
+	<p class="text-red-500">{todos.value.error}</p>
 {:else}
 	<p><b>Add your first todo item!</b></p>
 {/if}

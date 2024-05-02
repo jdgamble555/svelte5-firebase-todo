@@ -20,6 +20,10 @@
 		</button>
 		<hr />
 		<Todos />
+	{:else if user.value.loading}
+		<p>Loading...</p>
+	{:else if user.value.error}
+		<p class="text-red-500">Error: {user.value.error}</p>
 	{:else}
 		<button class="p-2 font-semibold text-white bg-red-600" on:click={loginWithGoogle}>
 			Signin with Google
