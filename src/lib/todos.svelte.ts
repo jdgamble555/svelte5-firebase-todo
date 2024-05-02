@@ -21,7 +21,8 @@ import { untrack } from "svelte";
 import { rune } from "./rune.svelte";
 import { dev } from "$app/environment";
 
-export const genText = () => Math.random().toString(36).substring(2, 15);
+export const genText = () =>
+    Math.random().toString(36).substring(2, 15);
 
 const todoConverter = {
     toFirestore(
@@ -35,7 +36,10 @@ const todoConverter = {
         return {
             ...value,
             uid: auth.currentUser.uid,
-            [isMerge ? 'updatedAt' : 'createdAt']: serverTimestamp()
+            [isMerge
+                ? 'updatedAt'
+                : 'createdAt'
+            ]: serverTimestamp()
         };
     },
     fromFirestore(
@@ -126,7 +130,8 @@ export const useTodos = () => {
 
 export const addTodo = async (text: string) => {
 
-    setDoc(doc(collection(db, 'todos')).withConverter(todoConverter), {
+    setDoc(doc(collection(db, 'todos'))
+        .withConverter(todoConverter), {
         text,
         complete: false
     }).catch((e) => {
@@ -136,11 +141,14 @@ export const addTodo = async (text: string) => {
     });
 }
 
-export const updateTodo = async (id: string, newStatus: boolean) => {
+export const updateTodo = async (
+    id: string,
+    newStatus: boolean
+) => {
 
     try {
         await setDoc(
-            doc(db, 'todos', id).withConverter(todoConverter),
+            doc(db, 'todos', id),
             { complete: newStatus },
             { merge: true }
         );
