@@ -101,6 +101,7 @@ export const useTodos = () => {
                     };
                 }
 
+                // id is added in converter
                 const data = q.docs.map(doc => doc.data({
                     serverTimestamps: 'estimate'
                 }));
@@ -159,6 +160,13 @@ export const updateTodo = async (
     }
 }
 
-export const deleteTodo = (id: string) => {
-    deleteDoc(doc(db, 'todos', id));
+export const deleteTodo = async (id: string) => {
+
+    try {
+        await deleteDoc(doc(db, 'todos', id));
+    } catch (e) {
+        if (e instanceof FirebaseError) {
+            console.error(e.code);
+        }
+    }
 }
