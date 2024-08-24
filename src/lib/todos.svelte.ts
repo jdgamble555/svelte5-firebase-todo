@@ -126,7 +126,8 @@ export const useTodos = () => {
 
 export const addTodo = async (text: string) => {
 
-    setDoc(doc(collection(db, 'todos')).withConverter(todoConverter), {
+    setDoc(doc(collection(db, 'todos'))
+        .withConverter(todoConverter), {
         text,
         complete: false
     }).catch((e) => {
@@ -136,11 +137,14 @@ export const addTodo = async (text: string) => {
     });
 }
 
-export const updateTodo = async (id: string, newStatus: boolean) => {
+export const updateTodo = async (
+    id: string,
+    newStatus: boolean
+) => {
 
     try {
         await setDoc(
-            doc(db, 'todos', id).withConverter(todoConverter),
+            doc(db, 'todos', id),
             { complete: newStatus },
             { merge: true }
         );
