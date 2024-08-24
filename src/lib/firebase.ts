@@ -6,7 +6,6 @@ import { getFirestore } from 'firebase/firestore';
 const firebase_config = JSON.parse(PUBLIC_FIREBASE_CONFIG);
 
 // initialize and login
-
 export const app = getApps().length
     ? getApp()
     : initializeApp(firebase_config);

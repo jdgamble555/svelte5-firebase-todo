@@ -21,7 +21,8 @@ import { untrack } from "svelte";
 import { rune } from "./rune.svelte";
 import { dev } from "$app/environment";
 
-export const genText = () => Math.random().toString(36).substring(2, 15);
+export const genText = () =>
+    Math.random().toString(36).substring(2, 15);
 
 const todoConverter = {
     toFirestore(
@@ -35,7 +36,10 @@ const todoConverter = {
         return {
             ...value,
             uid: auth.currentUser.uid,
-            [isMerge ? 'updatedAt' : 'createdAt']: serverTimestamp()
+            [isMerge
+                ? 'updatedAt'
+                : 'createdAt'
+            ]: serverTimestamp()
         };
     },
     fromFirestore(
