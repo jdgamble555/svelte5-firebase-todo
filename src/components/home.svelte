@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { loginWithGoogle, logout } from '$lib/user.svelte';
 	import Todos from '@components/todos.svelte';
 	import Profile from '@components/profile.svelte';
-	import { useUser } from '$lib/user.svelte';
+	import { useAuth, useUser } from '$lib/use-user';
 
 	const _user = useUser();
 	const user = $derived(_user.value);
+
+	const { loginWithGoogle, logout } = useAuth();
 </script>
 
 <h1 class="my-3 text-3xl font-semibold text-center">Svelte 5 Firebase Todo App</h1>

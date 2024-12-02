@@ -1,15 +1,20 @@
 <script lang="ts">
-	import { addTodo, genText } from '$lib/todos.svelte';
+	import { preventDefault } from '$lib/form-utils';
+	import { useAddTodo, useGenerateText } from '$lib/use-todos.svelte';
 
-    let text = genText();
+	const { addTodo } = useAddTodo();
+
+	const { generateText } = useGenerateText();
+
+	let text = $state(generateText());
 
 	function add() {
 		addTodo(text);
-		text = genText();
+		text = generateText();
 	}
 </script>
 
-<form on:submit|preventDefault={add}>
+<form onsubmit={preventDefault(add)}>
 	<input class="border p-2 rounded-lg" bind:value={text} />
 	<button class="border p-2 rounded-lg bg-purple-600 text-white font-semibold" type="submit">
 		Add Task

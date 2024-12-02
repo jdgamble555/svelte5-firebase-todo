@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import { useTodos } from '$lib/todos.svelte';
+	import { useTodos } from '$lib/use-todos.svelte';
 	import TodoItem from '@components/todo-item.svelte';
 	import TodoForm from './todo-form.svelte';
 

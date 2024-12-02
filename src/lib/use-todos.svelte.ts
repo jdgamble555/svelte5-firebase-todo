@@ -14,32 +14,32 @@ import {
     type PartialWithFieldValue,
     type SetOptions
 } from "firebase/firestore";
-import { auth, db } from "./firebase";
-import { useUser } from "./user.svelte";
+import { useUser } from "./use-user";
 import { FirebaseError } from "firebase/app";
 import { untrack } from "svelte";
 import { rune } from "./rune.svelte";
 import { dev } from "$app/environment";
+import { useFirebase } from "./firebase";
 
-export const genText = () =>
-    Math.random().toString(36).substring(2, 15);
+export const useGenerateText = () => {
+
+    const { db } = useFirebase();
+
+    // generate text from ID
+    const generateText = () => doc(collection(db, 'todos'))
+        .id.substring(0, 10).toLowerCase();
+
+    return {
+        generateText
+    };
+};
 
 const todoConverter = {
-    toFirestore(
-        value: PartialWithFieldValue<Todo>,
-        options?: SetOptions
-    ) {
+    toFirestore(value: PartialWithFieldValue<Todo>, options?: SetOptions) {
         const isMerge = options && 'merge' in options;
-        if (!auth.currentUser) {
-            throw 'User not logged in!';
-        }
         return {
             ...value,
-            uid: auth.currentUser.uid,
-            [isMerge
-                ? 'updatedAt'
-                : 'createdAt'
-            ]: serverTimestamp()
+            [isMerge ? 'updatedAt' : 'createdAt']: serverTimestamp()
         };
     },
     fromFirestore(
@@ -47,7 +47,7 @@ const todoConverter = {
         options: SnapshotOptions
     ) {
         const data = snapshot.data(options);
-        const createdAt = data['createdAt'] as Timestamp;
+        const createdAt = data.createdAt as Timestamp;
         return {
             ...data,
             id: snapshot.id,
@@ -58,6 +58,7 @@ const todoConverter = {
 
 export const useTodos = () => {
 
+    const { db } = useFirebase();
     const user = useUser();
 
     const _todos = rune<{
@@ -129,44 +130,82 @@ export const useTodos = () => {
     return _todos;
 };
 
-export const addTodo = async (text: string) => {
+export const useAddTodo = () => {
 
-    setDoc(doc(collection(db, 'todos'))
-        .withConverter(todoConverter), {
-        text,
-        complete: false
-    }).catch((e) => {
-        if (e instanceof FirebaseError) {
-            console.error(e.code)
+    const { db, auth } = useFirebase();
+
+    const addTodo = async (text: string) => {
+        const user = auth.currentUser;
+        if (!user) {
+            throw 'No user!';
         }
-    });
-}
-
-export const updateTodo = async (
-    id: string,
-    newStatus: boolean
-) => {
-
-    try {
-        await setDoc(
-            doc(db, 'todos', id),
-            { complete: newStatus },
-            { merge: true }
-        );
-    } catch (e) {
-        if (e instanceof FirebaseError) {
-            console.error(e.code);
+        try {
+            await setDoc(doc(collection(db, 'todos'))
+                .withConverter(todoConverter), {
+                uid: user.uid,
+                text,
+                complete: false
+            });
+        } catch (e) {
+            if (e instanceof FirebaseError) {
+                console.error(e);
+                return {
+                    error: e.message
+                };
+            }
         }
-    }
-}
+    };
 
-export const deleteTodo = async (id: string) => {
+    return { addTodo };
+};
 
-    try {
-        await deleteDoc(doc(db, 'todos', id));
-    } catch (e) {
-        if (e instanceof FirebaseError) {
-            console.error(e.code);
+export const useUpdateTodo = () => {
+
+    const { db } = useFirebase();
+
+    const updateTodo = async (
+        id: string,
+        newStatus: boolean
+    ) => {
+        try {
+            await setDoc(
+                doc(db, 'todos', id),
+                { complete: newStatus },
+                { merge: true }
+            );
+        } catch (e) {
+            if (e instanceof FirebaseError) {
+                console.error(e);
+                return {
+                    error: e.message
+                };
+            }
         }
-    }
-}
+    };
+
+    return {
+        updateTodo
+    };
+};
+
+export const useDeleteTodo = () => {
+
+    const { db } = useFirebase();
+
+    const deleteTodo = async (id: string) => {
+        try {
+            await deleteDoc(doc(db, 'todos', id));
+        } catch (e) {
+            if (e instanceof FirebaseError) {
+                console.error(e);
+                return {
+                    error: e.message
+                };
+            }
+        }
+    };
+
+    return {
+        deleteTodo
+    };
+};

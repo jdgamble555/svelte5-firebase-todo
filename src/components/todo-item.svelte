@@ -1,7 +1,11 @@
 <script lang="ts">
-	import { deleteTodo, updateTodo } from '$lib/todos.svelte';
+	import { preventDefault } from '$lib/form-utils';
+	import { useDeleteTodo, useUpdateTodo } from '$lib/use-todos.svelte';
 
-	export let todo: Todo;
+	let { todo }: { todo: Todo } = $props();
+
+	const { deleteTodo } = useDeleteTodo();
+	const { updateTodo } = useUpdateTodo();
 
 	function remove() {
 		deleteTodo(todo.id);
@@ -20,9 +24,9 @@
 </span>
 
 {#if todo.complete}
-	<button on:click={toggleStatus}> ✔️ </button>
+	<button type="button" onclick={preventDefault(toggleStatus)}> ✔️ </button>
 {:else}
-	<button on:click={toggleStatus}> ❌ </button>
+	<button type="button" onclick={preventDefault(toggleStatus)}> ❌ </button>
 {/if}
 
-<button on:click={remove}> 🗑 </button>
+<button type="button" onclick={preventDefault(remove)}> 🗑 </button>

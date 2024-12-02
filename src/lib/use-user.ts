@@ -5,16 +5,32 @@ import {
     signOut,
     type User
 } from "firebase/auth";
-import { auth } from "./firebase";
-import { useSharedStore } from "./use-shared.svelte";
+import { useFirebase } from "./firebase";
+import { useSharedStore } from "./use-shared";
 import { onDestroy } from "svelte";
 import { rune } from "./rune.svelte";
 
-export const loginWithGoogle = async () =>
-    await signInWithPopup(auth, new GoogleAuthProvider());
+export const useAuth = () => {
 
-export const logout = async () =>
-    await signOut(auth);
+    const { auth } = useFirebase();
+
+    const loginWithGoogle = async () => {
+        return await signInWithPopup(
+            auth,
+            new GoogleAuthProvider()
+        );
+    };
+
+    const logout = async () => {
+        return await signOut(auth);
+    };
+
+    return {
+        loginWithGoogle,
+        logout
+    };
+};
+
 
 const _useUser = () => {
 
@@ -27,6 +43,8 @@ const _useUser = () => {
         data: null,
         error: null
     });
+
+    const { auth } = useFirebase();
 
     const unsubscribe = onIdTokenChanged(
         auth,
