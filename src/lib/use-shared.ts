@@ -1,7 +1,7 @@
 import { getContext, hasContext, setContext } from "svelte";
 import { rune } from "./rune.svelte";
 
-export const useSharedStore = <T, A>(
+export const useShared = <T, A>(
     name: string,
     fn: (value?: A) => T,
     defaultValue?: A,
@@ -16,4 +16,4 @@ export const useSharedStore = <T, A>(
 
 // shared rune
 export const useRune = <T>(name: string, value: T) =>
-    useSharedStore(name, rune, value);
+    useShared(name, rune, value);

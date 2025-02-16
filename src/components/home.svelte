@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Todos from '@components/todos.svelte';
 	import Profile from '@components/profile.svelte';
-	import { useAuth, useUser } from '$lib/use-user';
+	import { useAuth, useUser } from '$lib/use-user.svelte';
 
 	const _user = useUser();
 	const user = $derived(_user.value);

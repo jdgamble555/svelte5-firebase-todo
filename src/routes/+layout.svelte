@@ -1,10 +1,10 @@
 <script>
-	import { usePlugins } from '$lib/use-plugins';
+	import { useProviders } from '$lib/use-providers';
 	import '../app.css';
 
 	let { children } = $props();
 
-	usePlugins();
+	useProviders();
 </script>
 
 {@render children()}

@@ -1,3 +1,4 @@
+import { dev } from "$app/environment";
 import { PUBLIC_FIREBASE_CONFIG } from "$env/static/public";
 import { initializeServerApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
@@ -10,7 +11,9 @@ export const firebaseServer = async (request: Request) => {
 
     const authIdToken = request.headers.get('Authorization')?.split('Bearer ')[1];
 
-    console.log(authIdToken);
+    if (dev) {
+        console.log(authIdToken);
+    }    
 
     const serverApp = initializeServerApp(firebase_config, {
         authIdToken

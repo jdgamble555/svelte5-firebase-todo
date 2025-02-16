@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { preventDefault } from '$lib/form-utils';
 	import { useDeleteTodo, useUpdateTodo } from '$lib/use-todos.svelte';
 
 	let { todo }: { todo: Todo } = $props();
@@ -7,11 +6,13 @@
 	const { deleteTodo } = useDeleteTodo();
 	const { updateTodo } = useUpdateTodo();
 
-	function remove() {
+	function remove(e: Event) {
+		e.preventDefault();
 		deleteTodo(todo.id);
 	}
 
-	function toggleStatus() {
+	function toggleStatus(e: Event) {
+		e.preventDefault();
 		updateTodo(todo.id, !todo.complete);
 	}
 </script>
@@ -24,9 +25,9 @@
 </span>
 
 {#if todo.complete}
-	<button type="button" onclick={preventDefault(toggleStatus)}> ✔️ </button>
+	<button type="button" onclick={toggleStatus}> ✔️ </button>
 {:else}
-	<button type="button" onclick={preventDefault(toggleStatus)}> ❌ </button>
+	<button type="button" onclick={toggleStatus}> ❌ </button>
 {/if}
 
-<button type="button" onclick={preventDefault(remove)}> 🗑 </button>
+<button type="button" onclick={remove}> 🗑 </button>

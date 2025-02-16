@@ -14,12 +14,12 @@ import {
     type PartialWithFieldValue,
     type SetOptions
 } from "firebase/firestore";
-import { useUser } from "./use-user";
+import { useUser } from "./use-user.svelte";
 import { FirebaseError } from "firebase/app";
 import { untrack } from "svelte";
 import { rune } from "./rune.svelte";
 import { dev } from "$app/environment";
-import { useFirebase } from "./firebase";
+import { useFirebase } from "./use-firebase";
 
 export const useGenerateText = () => {
 
@@ -61,7 +61,7 @@ export const useTodos = () => {
     const { db } = useFirebase();
     const user = useUser();
 
-    const _todos = rune<{
+    let _todos = rune<{
         data: Todo[],
         loading: boolean,
         error: FirebaseError | null

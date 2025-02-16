@@ -2,7 +2,7 @@ import { PUBLIC_FIREBASE_CONFIG } from '$env/static/public';
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { useSharedStore } from './use-shared';
+import { useShared } from './use-shared';
 
 const firebase_config = JSON.parse(PUBLIC_FIREBASE_CONFIG);
 
@@ -24,4 +24,4 @@ const _useFirebase = () => {
 };
 
 export const useFirebase = () =>
-    useSharedStore('firebase', _useFirebase);
+    useShared('firebase', _useFirebase);

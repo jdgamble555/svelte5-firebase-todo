@@ -5,8 +5,8 @@ import {
     signOut,
     type User
 } from "firebase/auth";
-import { useFirebase } from "./firebase";
-import { useSharedStore } from "./use-shared";
+import { useFirebase } from "./use-firebase";
+import { useShared } from "./use-shared";
 import { onDestroy } from "svelte";
 import { rune } from "./rune.svelte";
 
@@ -83,4 +83,4 @@ const _useUser = () => {
 };
 
 export const useUser = (defaultUser: UserType | null = null) =>
-    useSharedStore('user', _useUser, defaultUser);
+    useShared('user', _useUser, defaultUser);

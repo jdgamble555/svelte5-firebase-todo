@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useUser } from '$lib/use-user';
+	import { useUser } from '$lib/use-user.svelte';
 
 	const user = useUser();
 
