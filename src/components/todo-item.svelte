@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { useDeleteTodo, useUpdateTodo } from '$lib/use-todos.svelte';
+	import { deleteTodo, updateTodo } from '$lib/use-todos.svelte';
 
 	let { todo }: { todo: Todo } = $props();
-
-	const { deleteTodo } = useDeleteTodo();
-	const { updateTodo } = useUpdateTodo();
 
 	function remove(e: Event) {
 		e.preventDefault();

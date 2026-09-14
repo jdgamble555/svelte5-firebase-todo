@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { useUser } from '$lib/use-user.svelte';
+	import { getUser } from '$lib/use-user.svelte';
 
-	const user = useUser();
+	const user = getUser();
 
 	const userData = $derived(user.value.data);
 </script>

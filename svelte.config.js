@@ -7,10 +7,6 @@ const config = {
 	// for more information about preprocessors
 	preprocess: vitePreprocess(),
 
-	compilerOptions: {
-		runes: true
-	},
-
 	kit: {
 		alias: {
 			"@components/*": "./src/components/*"

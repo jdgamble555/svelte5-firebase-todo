@@ -1,31 +1,15 @@
-import { dev } from "$app/environment";
 import { PUBLIC_FIREBASE_CONFIG } from "$env/static/public";
 import { initializeServerApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore/lite";
 
 const firebase_config = JSON.parse(PUBLIC_FIREBASE_CONFIG);
 
 
-export const firebaseServer = async (request: Request) => {
-
-    const authIdToken = request.headers.get('Authorization')?.split('Bearer ')[1];
-
-    if (dev) {
-        console.log(authIdToken);
-    }    
+export const firebaseServer = async () => {
 
     const serverApp = initializeServerApp(firebase_config, {
-        authIdToken
+        authIdToken: undefined
     });
 
-    const serverAuth = getAuth(serverApp);
-    await serverAuth.authStateReady();
-
-    const serverDB = getFirestore(serverApp);
-
-    return {
-        serverAuth,
-        serverDB
-    };
+    return getFirestore(serverApp);
 };

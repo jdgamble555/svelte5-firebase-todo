@@ -1,23 +1,26 @@
 import {
     doc,
     getDoc,
-    type Firestore
+    type FirestoreDataConverter
 } from "firebase/firestore/lite";
+import { firebaseServer } from "./firebase-lite";
 
-type AboutDoc = {
-    name: string;
-    description: string;
+const aboutConverter: FirestoreDataConverter<AboutDoc> = {
+    toFirestore: (data) => data,
+    fromFirestore: (snapshot) => snapshot.data() as AboutDoc
 };
 
-export const getAbout = async (serverDB: Firestore) => {
+export const getAbout = async () => {
+
+    const serverDB = await firebaseServer();
 
     const aboutSnap = await getDoc(
-        doc(serverDB, '/about/ZlNJrKd6LcATycPRmBPA')
+        doc(serverDB, '/about/ZlNJrKd6LcATycPRmBPA').withConverter(aboutConverter)
     );
 
     if (!aboutSnap.exists()) {
         throw 'Document does not exist!';
     }
 
-    return aboutSnap.data() as AboutDoc;
+    return aboutSnap.data()
 };

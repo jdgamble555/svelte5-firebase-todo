@@ -1,9 +1,5 @@
 <script lang="ts">
-	import { useAddTodo, useGenerateText } from '$lib/use-todos.svelte';
-
-	const { addTodo } = useAddTodo();
-
-	const { generateText } = useGenerateText();
+	import { addTodo, generateText } from "$lib/use-todos.svelte";
 
 	let text = $state(generateText());
 

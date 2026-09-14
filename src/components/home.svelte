@@ -1,18 +1,23 @@
 <script lang="ts">
 	import Todos from '@components/todos.svelte';
 	import Profile from '@components/profile.svelte';
-	import { useAuth, useUser } from '$lib/use-user.svelte';
+	import { loginWithGoogle, logout, setUser } from '$lib/use-user.svelte';
 
-	const _user = useUser();
-	const user = $derived(_user.value);
+	const user = setUser();
 
-	const { loginWithGoogle, logout } = useAuth();
+	const title = 'SvelteKit Firebase Todo App';
 </script>
 
-<h1 class="my-3 text-3xl font-semibold text-center">Svelte 5 Firebase Todo App</h1>
+<svelte:head>
+	<title>{title}</title>
+</svelte:head>
+
+<h1 class="my-3 text-3xl font-semibold text-center">
+	{title}
+</h1>
 
 <section class="flex flex-col items-center gap-3 p-5">
-	{#if user.data}
+	{#if user.value.data}
 		<Profile />
 		<button
 			class="p-3 font-semibold text-white bg-blue-600 border rounded-lg w-fit"
@@ -22,10 +27,8 @@
 		</button>
 		<hr />
 		<Todos />
-	{:else if user.loading}
+	{:else if user.value.loading}
 		<p>Loading...</p>
-	{:else if user.error}
-		<p class="text-red-500">Error: {user.error}</p>
 	{:else}
 		<button class="p-2 font-semibold text-white bg-red-600" onclick={loginWithGoogle}>
 			Signin with Google

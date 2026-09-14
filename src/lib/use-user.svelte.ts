@@ -5,46 +5,30 @@ import {
     signOut,
     type User
 } from "firebase/auth";
-import { useFirebase } from "./use-firebase";
-import { useShared } from "./use-shared";
-import { onDestroy } from "svelte";
-import { rune } from "./rune.svelte";
+import { getContext, onDestroy, setContext } from "svelte";
+import { auth } from "./use-firebase";
 
-export const useAuth = () => {
+const USER_KEY = Symbol('user');
 
-    const { auth } = useFirebase();
-
-    const loginWithGoogle = async () => {
-        return await signInWithPopup(
-            auth,
-            new GoogleAuthProvider()
-        );
-    };
-
-    const logout = async () => {
-        return await signOut(auth);
-    };
-
-    return {
-        loginWithGoogle,
-        logout
-    };
+export const loginWithGoogle = () => {
+    return signInWithPopup(
+        auth,
+        new GoogleAuthProvider()
+    );
 };
 
+export const logout = () => {
+    return signOut(auth);
+};
 
-const _useUser = () => {
+export const setUser = () => {
 
-    const user = rune<{
-        loading: boolean,
-        data: UserType | null,
-        error: Error | null
-    }>({
-        loading: true,
-        data: null,
-        error: null
+    const user = $state<{ value: UserState }>({
+        value: {
+            loading: true,
+            data: null
+        }
     });
-
-    const { auth } = useFirebase();
 
     const unsubscribe = onIdTokenChanged(
         auth,
@@ -54,8 +38,7 @@ const _useUser = () => {
             if (!_user) {
                 user.value = {
                     loading: false,
-                    data: null,
-                    error: null
+                    data: null
                 };
                 return;
             }
@@ -64,23 +47,17 @@ const _useUser = () => {
             const { displayName, photoURL, uid, email } = _user;
             user.value = {
                 loading: false,
-                data: { displayName, photoURL, uid, email },
-                error: null
-            };
-        }, (error) => {
-
-            // error
-            user.value = {
-                loading: false,
-                data: null,
-                error
+                data: { displayName, photoURL, uid, email }
             };
         });
+
+    setContext(USER_KEY, user);
 
     onDestroy(unsubscribe);
 
     return user;
 };
 
-export const useUser = (defaultUser: UserType | null = null) =>
-    useShared('user', _useUser, defaultUser);
+export const getUser = () => {
+    return getContext<{ value: UserState }>(USER_KEY);
+};
