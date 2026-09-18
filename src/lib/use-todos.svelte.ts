@@ -23,16 +23,18 @@ export const generateText = () =>
         .id
         .substring(0, 10)
         .toLowerCase();
-        
+
 
 const todoConverter: FirestoreDataConverter<TodoDoc> = {
     toFirestore(todo) {
         return todo;
     },
 
-    fromFirestore(snapshot, options): TodoDoc {
+    fromFirestore(snapshot): TodoDoc {
 
-        const data = snapshot.data(options);
+        const data = snapshot.data({
+            serverTimestamps: 'estimate'
+        });
 
         const createdAt = data.createdAt as Timestamp
 
@@ -86,10 +88,8 @@ export const useTodos = () => {
                 orderBy('createdAt')
             ).withConverter(todoConverter),
             (snapshot) => {
-                const data = snapshot.docs.map((doc) =>
-                    doc.data({
-                        serverTimestamps: 'estimate'
-                    })
+                const data = snapshot.docs.map(
+                    (doc) => doc.data()
                 );
 
                 if (dev) {
@@ -119,9 +119,8 @@ export const addTodo = async (text: string) => {
     const user = auth.currentUser;
 
     if (!user) {
-        throw new Error('No user!');
+        return { error: 'No User!' };
     }
-
     try {
         await setDoc(
             doc(collection(db, 'todos')),
@@ -132,15 +131,11 @@ export const addTodo = async (text: string) => {
                 createdAt: serverTimestamp()
             }
         );
+        return { error: null };
     } catch (e) {
         if (e instanceof FirebaseError) {
-            console.error(e);
-
-            return {
-                error: e.message
-            };
+            return { error: e.message };
         }
-
         throw e;
     }
 };
@@ -157,15 +152,13 @@ export const updateTodo = async (
                 updatedAt: serverTimestamp()
             }
         );
+        return { error: null };
     } catch (e) {
         if (e instanceof FirebaseError) {
-            console.error(e);
-
             return {
                 error: e.message
             };
         }
-
         throw e;
     }
 };
@@ -175,15 +168,13 @@ export const deleteTodo = async (id: string) => {
         await deleteDoc(
             doc(db, 'todos', id)
         );
+        return { error: null };
     } catch (e) {
         if (e instanceof FirebaseError) {
-            console.error(e);
-
             return {
                 error: e.message
             };
         }
-
         throw e;
     }
 };
