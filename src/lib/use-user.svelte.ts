@@ -6,7 +6,7 @@ import {
     type User
 } from "firebase/auth";
 import { getContext, onDestroy, setContext } from "svelte";
-import { auth } from "./use-firebase";
+import { auth } from "./firebase";
 
 const USER_KEY = Symbol('user');
 

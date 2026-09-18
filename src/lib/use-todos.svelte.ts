@@ -14,7 +14,7 @@ import {
 } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
 import { dev } from "$app/environment";
-import { auth, db } from "./use-firebase";
+import { auth, db } from "./firebase";
 import { getUser } from "./use-user.svelte";
 
 
