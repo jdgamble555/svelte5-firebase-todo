@@ -25,12 +25,12 @@ export const generateText = () =>
         .toLowerCase();
         
 
-const todoConverter: FirestoreDataConverter<Todo> = {
+const todoConverter: FirestoreDataConverter<TodoDoc> = {
     toFirestore(todo) {
         return todo;
     },
 
-    fromFirestore(snapshot, options): Todo {
+    fromFirestore(snapshot, options): TodoDoc {
 
         const data = snapshot.data(options);
 
@@ -52,7 +52,7 @@ export const useTodos = () => {
 
     let todos = $state<{
         value: {
-            data: Todo[],
+            data: TodoDoc[],
             loading: boolean,
             error: FirebaseError | null
         }
