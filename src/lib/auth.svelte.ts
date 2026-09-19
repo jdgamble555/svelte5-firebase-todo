@@ -8,6 +8,7 @@ import {
 import { getContext, onDestroy, setContext } from "svelte";
 import { auth } from "./firebase";
 
+// User context key
 const USER_KEY = Symbol('user');
 
 export const loginWithGoogle = () => {
@@ -30,6 +31,7 @@ export const setUser = () => {
         }
     });
 
+    // Create user listener
     const unsubscribe = onIdTokenChanged(
         auth,
         (_user: User | null) => {

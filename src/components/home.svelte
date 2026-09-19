@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Todos from '@components/todos.svelte';
 	import Profile from '@components/profile.svelte';
-	import { loginWithGoogle, logout, setUser } from '$lib/use-user.svelte';
+	import { loginWithGoogle, logout, setUser } from '$lib/auth.svelte';
 
 	const user = setUser();
 

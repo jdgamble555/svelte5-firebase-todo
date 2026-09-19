@@ -15,9 +15,10 @@ import {
 import { FirebaseError } from "firebase/app";
 import { dev } from "$app/environment";
 import { auth, db } from "./firebase";
-import { getUser } from "./use-user.svelte";
+import { getUser } from "./auth.svelte";
 
 
+// Only used to create example texts -- DO NOT USE IN PRODUCTION
 export const generateText = () =>
     doc(collection(db, 'todos'))
         .id
@@ -32,10 +33,12 @@ const todoConverter: FirestoreDataConverter<TodoDoc> = {
 
     fromFirestore(snapshot): TodoDoc {
 
+        // server optimistic date updates
         const data = snapshot.data({
             serverTimestamps: 'estimate'
         });
 
+        // correctly use the date type
         const createdAt = data.createdAt as Timestamp
 
         return {
@@ -69,6 +72,7 @@ export const useTodos = () => {
 
     $effect(() => {
 
+        // Must be logged in
         const currentUser = user.value.data;
 
         if (!currentUser) {

@@ -6,4 +6,5 @@ const firebase_config = JSON.parse(PUBLIC_FIREBASE_CONFIG);
 
 const serverApp = initializeApp(firebase_config);
 
+// !!! This is imported from `firestore/lite` directory for smaller server imports
 export const serverDB = getFirestore(serverApp);
