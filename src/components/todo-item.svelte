@@ -2,15 +2,16 @@
 	import { deleteTodo, updateTodo } from '$lib/todos.svelte';
 
 	let { todo }: { todo: TodoDoc } = $props();
+	let error = $state<string | null>(null);
 
-	function remove(e: Event) {
-		e.preventDefault();
-		deleteTodo(todo.id);
+	async function toggleStatus() {
+		const result = await updateTodo(todo.id, !todo.complete);
+		error = result.error;
 	}
 
-	function toggleStatus(e: Event) {
-		e.preventDefault();
-		updateTodo(todo.id, !todo.complete);
+	async function remove() {
+		const result = await deleteTodo(todo.id);
+		error = result.error;
 	}
 </script>
 
@@ -21,10 +22,9 @@
 	{todo.id}
 </span>
 
-{#if todo.complete}
-	<button type="button" onclick={toggleStatus}> ✔️ </button>
-{:else}
-	<button type="button" onclick={toggleStatus}> ❌ </button>
-{/if}
+<button type="button" onclick={toggleStatus} aria-label={todo.complete ? 'Mark task incomplete' : 'Mark task complete'}>
+	{todo.complete ? '✔️' : '❌'}
+</button>
 
-<button type="button" onclick={remove}> 🗑 </button>
+<button type="button" onclick={remove} aria-label="Delete task"> 🗑 </button>
+{#if error}<p role="alert" class="text-red-600">{error}</p>{/if}

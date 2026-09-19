@@ -2,6 +2,7 @@ import {
     collection,
     deleteDoc,
     doc,
+    FirestoreError,
     onSnapshot,
     orderBy,
     query,
@@ -12,7 +13,6 @@ import {
     type FirestoreDataConverter,
     updateDoc
 } from "firebase/firestore";
-import { FirebaseError } from "firebase/app";
 import { dev } from "$app/environment";
 import { auth, db } from "./firebase";
 import { getUser } from "./auth.svelte";
@@ -59,7 +59,7 @@ export const useTodos = () => {
         value: {
             data: TodoDoc[],
             loading: boolean,
-            error: FirebaseError | null
+            error: FirestoreError | null
         }
 
     }>({
@@ -123,7 +123,7 @@ export const addTodo = async (text: string) => {
     const user = auth.currentUser;
 
     if (!user) {
-        return { error: 'No User!' };
+        return { error: 'No user' };
     }
     try {
         await setDoc(
@@ -137,7 +137,7 @@ export const addTodo = async (text: string) => {
         );
         return { error: null };
     } catch (e) {
-        if (e instanceof FirebaseError) {
+        if (e instanceof FirestoreError) {
             return { error: e.message };
         }
         throw e;
@@ -158,10 +158,8 @@ export const updateTodo = async (
         );
         return { error: null };
     } catch (e) {
-        if (e instanceof FirebaseError) {
-            return {
-                error: e.message
-            };
+        if (e instanceof FirestoreError) {
+            return { error: e.message };
         }
         throw e;
     }
@@ -174,10 +172,8 @@ export const deleteTodo = async (id: string) => {
         );
         return { error: null };
     } catch (e) {
-        if (e instanceof FirebaseError) {
-            return {
-                error: e.message
-            };
+        if (e instanceof FirestoreError) {
+            return { error: e.message };
         }
         throw e;
     }

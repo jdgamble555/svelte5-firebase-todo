@@ -20,7 +20,7 @@
 {:else if todos.loading}
 	<p>Loading...</p>
 {:else if todos.error}
-	<p class="text-red-500">{todos.error}</p>
+	<p role="alert" class="text-red-600">{todos.error.message}</p>
 {:else}
 	<p><b>Add your first todo item!</b></p>
 {/if}
